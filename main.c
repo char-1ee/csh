@@ -61,13 +61,7 @@ int sh_exit(char ** args) {
 
 //------------------------------------------------------------------------------------------
 
-void sh_loop(void) {
-    
-}
-
-
-
-int main(int argc, char ** argv) {
+int main(int argc, char ** argv) {      // TODO: add command hint/correction machanism? Refer to RRPSS  
     sh_loop();
     return EXIT_SUCCESS;
 }
