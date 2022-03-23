@@ -4,11 +4,15 @@
 #include <stdio.h>
 #include <string.h>
 
-#define SH_RL_BUFSIZE 1024;
+#define SH_RL_BUFSIZE 1024
+#define LSH_TOK_BUFSIZE 64
+#define LSH_TOK_DELIM " \t\r\n\a"
 
 int sh_cd(char **args);
 int sh_help(char **args);
 int sh_exit(char **args);
+int sh_launch(char **args);
+int sh_split_line(char **args);
 
 /**
  * @brief List of builtin commands, followed by their corresponding functions. 
@@ -88,7 +92,7 @@ char * sh_read_line(void) {
         c = getchar();
 
         // when hit EOF or escape, replace it with null charactor and return
-        if (c == EOF || c = '\n') {
+        if (c == EOF || c == '\n') {
             buffer[position] = '\0';
             return buffer;
         } else {
@@ -100,9 +104,9 @@ char * sh_read_line(void) {
     // a common strategy: when exceed buffersize, we reallocate the buffer
     if (position >= buffsize) {
         buffsize += SH_RL_BUFSIZE;
-        buffer = realloc(buffer, buffersize);
+        buffer = realloc(buffer, BUFSIZ);
         if (!buffer) {
-            fprintf(stderr. "sh: reallocation error \n");
+            fprintf(stderr, "sh: reallocation error \n");
             exit(EXIT_FAILURE);
         }
     }
@@ -113,7 +117,36 @@ char * sh_read_line(void) {
  * 
  */
 
-// TODO
+char **lsh_split_line(char *line)
+{
+  int bufsize = LSH_TOK_BUFSIZE, position = 0;
+  char **tokens = malloc(bufsize * sizeof(char*));
+  char *token;
+
+  if (!tokens) {
+    fprintf(stderr, "lsh: allocation error\n");
+    exit(EXIT_FAILURE);
+  }
+
+  token = strtok(line, LSH_TOK_DELIM);
+  while (token != NULL) {
+    tokens[position] = token;
+    position++;
+
+    if (position >= bufsize) {
+      bufsize += LSH_TOK_BUFSIZE;
+      tokens = realloc(tokens, bufsize * sizeof(char*));
+      if (!tokens) {
+        fprintf(stderr, "lsh: allocation error\n");
+        exit(EXIT_FAILURE);
+      }
+    }
+
+    token = strtok(NULL, LSH_TOK_DELIM);
+  }
+  tokens[position] = NULL;
+  return tokens;
+}
 
 
 /**
@@ -138,16 +171,29 @@ int sh_execute(char ** args) {
     return sh_launch(args);
 }
 
-// TODO
 int sh_launch(char ** args) {
-    pid_t pis, wpid;
+    pid_t pid, wpid;
     int status;
 
     pid = fork();
     if (pid == 0) {
-        id ()
+        // Child process
+        if (execvp(args[0], args) == -1) {
+        perror("lsh");
+        }
+        exit(EXIT_FAILURE);
+    } else if (pid < 0) {
+        // Error forking
+        perror("lsh");
+    } else {
+        // Parent process
+        do {
+        wpid = waitpid(pid, &status, WUNTRACED);
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
-}
+
+    return 1;
+    }
 
 /**
  * @brief A loop to input.
@@ -166,14 +212,14 @@ void sh_loop(void) {
 
         free(line);
         free(args);
-    } while (status)
+    } while (status);
 }
 
-int main(int argc, char ** argv) {      // TODO: add command hint/correction machanism? Refer to RRPSS  
+// int main(int argc, char ** argv) {      // TODO: add command hint/correction machanism?  
     
-    // Run command loop
-    sh_loop();
+//     // Run command loop
+//     sh_loop();
 
-    return EXIT_SUCCESS;
-}
+//     return EXIT_SUCCESS;
+// }
 
