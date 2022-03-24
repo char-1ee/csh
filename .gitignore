@@ -1,0 +1,10 @@
+.DS_store 
+.env
+.vscode
+.idea
+
+# binary files with no extension
+*
+!/**/
+!*.*
+!*/
