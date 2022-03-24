@@ -25,7 +25,7 @@ while(TRUE) {                           /* repeat forever */
 ## Run
 Compile after download the code 
 ```bash
-$ gcc -g -lreadline main.c
+$ gcc -lreadline -o code code.c
 ```
 Then run 
 ```bash
