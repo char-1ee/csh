@@ -9,12 +9,15 @@
 
 #define TRUE 1
 #define BUFF_SIZE 100
+#define MAX_NAME_SIZE 256
+#define MAX_PATH_SIZE 1024
 
 char **read_command(char *);
 int cd(char *);
 void sigint_handler(int);
+void type_prompt(char *);
 
-static sigjmp_buf env;
+static jmp_buf env;
 static volatile sig_atomic_t jump_flag = 0;
 
 int main() {
@@ -24,17 +27,18 @@ int main() {
     int sta_loc;
 
     /* Setup SIGINT */
-    struct sigaction s;
-    s.sa_handler = sigint_handler;
-    sigemptyset(&s.sa_mask);
-    s.sa_flags = SA_RESTART;
-    sigaction(SIGINT, &s, NULL);
+    // struct sigaction s;
+    // s.sa_handler = sigint_handler;
+    // sigemptyset(&s.sa_mask);
+    // s.sa_flags = SA_RESTART;
+    // sigaction(SIGINT, &s, NULL);
+    signal(SIGINT, SIG_IGN);
 
     while (TRUE) {
-        if (sigsetjmp(env, 1) == 42) {
-            printf("\n");
-            continue;
-        }
+        // if (sigsetjmp(env, 1) == 42) {
+        //     printf("\n");
+        //     continue;
+        // }
 
         jump_flag = 1;
         input = readline("csh> ");
@@ -70,11 +74,13 @@ int main() {
         }
 
         if (child_pid == 0) {
-            struct sigaction s_child;
-            s_child.sa_handler = sigint_handler;
-            sigemptyset(&s_child.sa_mask);
-            s_child.sa_flags = SA_RESTART;
-            sigaction(SIGINT, &s_child, NULL);
+            // struct sigaction s_child;
+            // s_child.sa_handler = sigint_handler;
+            // sigemptyset(&s_child.sa_mask);
+            // s_child.sa_flags = SA_RESTART;
+            // sigaction(SIGINT, &s_child, NULL);
+
+            signal(SIGINT, SIG_DFL);
 
             /* if return -1, exxcution failed */
             if (execvp(command[0], command) < 0) {
@@ -124,8 +130,37 @@ int cd(char *path) {
     return chdir(path);
 }
 
+/* signal handler */
 void sigint_handler(int signo) {
     if (!jump_flag)
         return;
     siglongjmp(env, 42);
 }
+
+/* display prompt */
+// void type_prompt(char *prompt) {
+
+//     extern struct passwd *pwd;
+//     char hostname[MAX_NAME_SIZE];
+//     char pathname[MAX_PATH_SIZE];
+//     int length;
+
+//     pwd = getpwuid(getuid());
+//     getcwd(pathname, MAX_PATH_SIZE);
+//     if(gethostname(hostname, MAX_NAME_SIZE)==0)
+//         sprintf(prompt,"[Wshell]%s@%s:", pwd->pw_name,hostname);
+//     else
+//         sprintf(prompt,"[Wshell]%s@unknown:", pwd->pw_name);
+
+//     length = strlen(prompt);
+//     if(strlen(pathname) < strlen(pwd->pw_dir) || strncmp(pathname, pwd->pw_dir, strlen(pwd->pw_dir))!=0)
+//         sprintf(prompt+length,"%s",pathname);
+//     else
+//         sprintf(prompt+length,"~%s",pathname+strlen(pwd->pw_dir));
+//     length = strlen(prompt);
+//     if(geteuid()==0)
+//         sprintf(prompt+length,"#");
+//     else
+//         sprintf(prompt+length,"$");
+//     return;
+// }
