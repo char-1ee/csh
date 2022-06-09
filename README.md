@@ -1,4 +1,4 @@
-# CSH (In maintenance)
+# CSH 
 
 csh is unix shell written in c. It implements the basic functions of a unix shell, including system calls like `pwd`, `ls` and builtins like `cd`, `help`, `exit`.
 
