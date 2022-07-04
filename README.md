@@ -1,8 +1,8 @@
 # csh
 
-csh is unix shell written in c. It implements the basic functions of a unix shell, including system calls like `pwd`, `ls` and builtins like `cd`, `help`, `exit`.
+csh is a simplified unix shell written in c. It implements the basic functions of a unix shell, including system calls like `pwd`, `ls` and builtins like `cd`, `help`, `exit`.
 
-## Architecture
+### Architecture
 
 According to *Modern Operating Systems (3rd Edition)*
 
@@ -22,12 +22,16 @@ while (TRUE) {                           /* repeat forever */
 }
 ```
 
-## Run
-Compile after download the code 
+### Run
+
+Compile after download the code
+
 ```bash
 $ gcc -lreadline -o code code.c
 ```
-Then run 
+
+Then run
+
 ```bash
 $ ./csh
 ```
