@@ -1,11 +1,9 @@
 # csh
 
-csh is a simplified unix shell written in c. It implements the basic functions of a unix shell, including system calls like `pwd`, `ls` and builtins like `cd`, `help`, `exit`.
+This is a simplified Unix shell in C. It implements part of bash built-in commands (`pwd`, `ls`, `help` etc.) and supports singals and error handling.
 
-### Architecture
-
-According to *Modern Operating Systems (3rd Edition)*
-
+### Basic logic
+According to *Modern Operating Systems (3rd Edition)*:
 ```c
 #define TRUE 1
 
@@ -23,15 +21,13 @@ while (TRUE) {                           /* repeat forever */
 ```
 
 ### Run
-
-Compile after download the code
-
+On Debian based platforms, like Ubuntu, prerequisite for `readline/readline.h`:
 ```bash
-$ gcc -lreadline -o code code.c
+$ sudo apt-get install libreadline-dev 
 ```
-
-Then run
-
+Then build with Makefile:
 ```bash
-$ ./csh
+$ git clone https://github.com/char-1ee/csh.git
+$ cd csh
+$ make
 ```
